@@ -1,0 +1,71 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+// Function to calculate the maximum value in the knapsack
+double fractionalKnapsack(const vector<double>& weights, const vector<double>& values, double capacity) {
+    if (weights.size() != values.size()) {
+        throw invalid_argument("Weights and values must be of the same length.");
+    }
+    
+    double res = 0.0;
+    // Create a vector of pairs to hold weight and value
+    vector<pair<double, double>> items;
+    for (size_t i = 0; i < weights.size(); ++i) {
+        items.push_back(make_pair(weights[i], values[i]));
+    }
+
+    // Sort items by value-to-weight ratio in descending order
+    sort(items.begin(), items.end(), [](const pair<double, double>& a, const pair<double, double>& b) {
+        return (a.second / a.first) > (b.second / b.first);
+    });
+
+    // Greedily add items to the knapsack
+    for (const auto& item : items) {
+        if (capacity <= 0) {
+            break;
+        }
+        if (item.first > capacity) {
+            res += capacity * (item.second / item.first);
+            capacity = 0;
+        } else {
+            res += item.second;
+            capacity -= item.first;
+        }
+    }
+    return res;
+}
+
+int main() {
+    int numItems;
+    cout << "Enter the number of items: ";
+    cin >> numItems;
+
+    vector<double> weights(numItems);
+    vector<double> values(numItems);
+
+    cout << "Enter the weights (space-separated): ";
+    for (int i = 0; i < numItems; ++i) {
+        cin >> weights[i];
+    }
+
+    cout << "Enter the values (space-separated): ";
+    for (int i = 0; i < numItems; ++i) {
+        cin >> values[i];
+    }
+
+    double capacity;
+    cout << "Enter the capacity of the knapsack: ";
+    cin >> capacity;
+
+    if (weights.size() != numItems || values.size() != numItems) {
+        throw invalid_argument("The number of weights and values must match the number of items.");
+    }
+
+    double maxValue = fractionalKnapsack(weights, values, capacity);
+    cout << "Maximum value in the knapsack: " << maxValue << endl;
+
+    return 0;
+}

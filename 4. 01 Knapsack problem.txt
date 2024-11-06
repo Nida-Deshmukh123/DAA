@@ -1,0 +1,49 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int knapsack(const vector<int>& weights, const vector<int>& values, int capacity) {
+    int n = weights.size();
+    vector<vector<int>> dp(n + 1, vector<int>(capacity + 1, 0));
+
+    // Build the DP table in a bottom-up manner
+    for (int i = 1; i <= n; ++i) {
+        for (int w = 1; w <= capacity; ++w) {
+            if (weights[i - 1] <= w) {
+                dp[i][w] = max(dp[i - 1][w], values[i - 1] + dp[i - 1][w - weights[i - 1]]);
+            } else {
+                dp[i][w] = dp[i - 1][w];
+            }
+        }
+    }
+
+    // The bottom-right cell contains the maximum value that can be obtained
+    return dp[n][capacity];
+}
+
+int main() {
+    int numItems;
+    cout << "Enter the number of items: ";
+    cin >> numItems;
+
+    vector<int> weights(numItems), values(numItems);
+    cout << "Enter the weights of the items: ";
+    for (int i = 0; i < numItems; ++i) {
+        cin >> weights[i];
+    }
+
+    cout << "Enter the values of the items: ";
+    for (int i = 0; i < numItems; ++i) {
+        cin >> values[i];
+    }
+
+    int capacity;
+    cout << "Enter the capacity of the knapsack: ";
+    cin >> capacity;
+
+    int maxValue = knapsack(weights, values, capacity);
+    cout << "Maximum value that can be obtained: " << maxValue << endl;
+
+    return 0;
+}
